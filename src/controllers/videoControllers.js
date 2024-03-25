@@ -2,8 +2,8 @@ import { render } from "pug";
 import Video from "../models/Video";
 
 export const home = async (req, res) => {
-  const videos = await Video.find({});
-  console.log(videos);
+  const videos = await Video.find({}).sort({ createdAt: "desc" });
+
   return res.render("home", { pageTitle: "Home", videos });
 };
 
@@ -36,9 +36,7 @@ export const postEdit = async (req, res) => {
   await Video.findByIdAndUpdate(id, {
     title,
     description,
-    hashtags: hashtags
-      .split(",")
-      .map((word) => (word.startsWith("#") ? word : `#${word}`)),
+    hashtags: Video.formatHashtags(hashtags),
   });
   return res.redirect(`/videos/${id}`);
 };
@@ -53,9 +51,7 @@ export const postUpload = async (req, res) => {
     await Video.create({
       title,
       description,
-      hashtags: hashtags
-        .split(",")
-        .map((word) => (word.startsWith("#") ? word : `#${word}`)),
+      hashtags: Video.formatHashtags(hashtags),
     });
     return res.redirect("/");
   } catch (error) {
@@ -65,4 +61,16 @@ export const postUpload = async (req, res) => {
     });
   }
 };
+
+export const deleteVideo = async (req, res) => {
+  const { id } = req.params;
+  await Video.findByIdAndDelete(id);
+  return res.redirect("/");
+};
 // const dbVideo = await video.save();
+
+export const search = (req, res) => {
+  const { keyword } = req.query;
+  console.log("should search for", keyword);
+  return res.render("search", { pageTitle: "Search" });
+};
