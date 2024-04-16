@@ -218,7 +218,6 @@ export const postChangePassword = async (req, res) => {
       errorMessage: "The password does not match the confirmation",
     });
   }
-  console.log(user.password);
   user.password = newPassword;
   await user.save();
   // const { oldPassword, newPassword, newPasswordConfirmation } = req.body;
